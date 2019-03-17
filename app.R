@@ -1,19 +1,30 @@
 library(dplyr)
+library(lattice)
 library(ggplot2)
 library(corrplot)
 library(readr)
 library(caret)
 library(reshape)
+library(MASS)
+library(Matrix)
 library(arm)
-#library(LiblineaR)
-do.call(library, list(package = LiblineaR, character.only = TRUE))
+library(lme4)
+library(gbm)
+library(pls)
+library(rsconnect)
+library(randomForest)
+library(LiblineaR)
+library(lars)
+library(elasticnet)
+#do.call(library, list(package = "LiblineaR", character.only = TRUE))
 library(shiny)
-#library(shinydashboard)
+library(shinydashboard)
 
-data("ChickWeight")
+#data("ChickWeight")
 
-data <- ChickWeight
+#data <- ChickWeight
 
+data <- read.csv("ChickWeight.csv")
 
 inTrain <- createDataPartition(data$weight, p = .75, list = F)
 
@@ -25,21 +36,19 @@ train_lm <- train[,-3]
 linear_model <- train(weight~., data = train_lm, method = "lm" )
 
 gradient_boosted_machine <- train(weight~., data = train, method = "gbm", verbose = F )
-random_forest <- train(weight~., data = train, method = "rf")
+#random_forest <- train(weight~., data = train, method = "rf")
 elastanet <- train(weight~., data = train, method = "enet")
 partial_least_squares <- train(weight~., data = train, method = "pls")
-support_vector_machine <- train(weight~., data = train, method = "svmLinear3")
 
 mods_all <- list(linear_model=linear_model,
                  gradient_boosted_machine=gradient_boosted_machine,
-                 random_forest = random_forest, partial_least_squares = partial_least_squares,
-                 elastanet= elastanet,support_vector_machine = support_vector_machine)
+                 partial_least_squares = partial_least_squares,
+                 elastanet= elastanet)
 
 
 
 models <- c("linear_model", "gradient_boosted_machine", 
-            "random_forest", "elastanet", "partial_least_squares",
-            "support_vector_machine")
+             "elastanet", "partial_least_squares")
 
 
 ui <- fluidPage(
